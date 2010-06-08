@@ -4,8 +4,8 @@ $_['heading_title']      = 'Zeevex';
 
 // Text 
 $_['text_payment']       = 'Payment';
-$_['text_success']       = 'Success: You have modified PayPal account details!';
-$_['text_zx_standard']   = '<a onclick="window.open(\'https://www.zeevex.com/mrb/pal=W9TBB5DTD6QJW\');"><img src="view/image/payment/zeevex.png" alt="Zeevex" title="Zeevex" style="border: 1px solid #EEEEEE;" /></a>';
+$_['text_success']       = 'Success: You have modified Zeevex account details!';
+$_['text_zx_standard']   = '<a onclick="window.open(\'https://sandbox.zeevex.com/mrb/pal=W9TBB5DTD6QJW\');"><img src="view/image/payment/zeevex.png" alt="Zeevex" title="Zeevex" style="border: 1px solid #EEEEEE;" /></a>';
 $_['text_authorization'] = 'Authorization';
 $_['text_sale']          = 'Sale';
 
@@ -19,6 +19,6 @@ $_['entry_status']       = 'Status:';
 $_['entry_sort_order']   = 'Sort Order:';
 
 // Error
-$_['error_permission']   = 'Warning: You do not have permission to modify payment PayPal!';
+$_['error_permission']   = 'Warning: You do not have permission to modify payment Zeevex!';
 $_['error_email']        = 'E-Mail required!'; 
 ?>
