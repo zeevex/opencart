@@ -5,9 +5,9 @@ class ControllerPaymentZXStandard extends Controller {
         $this->data['button_back'] = $this->language->get('button_back');
 
         if (!$this->config->get('zx_standard_test')) {
-            $this->data['action'] = 'http://localhost:4500/cgi-bin/webscr';
+           $this->data['action'] = 'http://sandbox.zeevex.com/cgi-bin/webscr';
         } else {
-            $this->data['action'] = 'http://localhost:4500/cgi-bin/webscr';
+           $this->data['action'] = 'http://localhost:4500/cgi-bin/webscr';   
         }
 
         $this->load->model('checkout/order');
@@ -68,7 +68,6 @@ class ControllerPaymentZXStandard extends Controller {
     }
 
     public function callback() {
-        error_log("Begining callback:", 3, "/tmp/opencart-errors.log");
         
         $this->load->library('encryption');
 
@@ -91,14 +90,13 @@ class ControllerPaymentZXStandard extends Controller {
                 $request .= '&' . $key . '=' . urlencode(stripslashes(html_entity_decode($value, ENT_QUOTES, 'UTF-8')));
             }
 
-            error_log("curl sending: ", 3, "/tmp/opencart-errors.log");
-            error_log($request, 3, "/tmp/opencart-errors.log");
             if (extension_loaded('curl')) {
-                error_log("Got curl extention:", 3, "/tmp/opencart-errors.log");
                 if (!$this->config->get('zx_standard_test')) {
-                    $ch = curl_init('http://localhost:4500/cgi-bin/webscr');
+
+                    $ch = curl_init('http://sandbox.zeevex.com/cgi-bin/webscr');
                 } else {
                     $ch = curl_init('http://localhost:4500/cgi-bin/webscr');
+                    
                 }
 
                 curl_setopt($ch, CURLOPT_POST, true);
@@ -109,8 +107,6 @@ class ControllerPaymentZXStandard extends Controller {
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
                 $response = curl_exec($ch);
-                error_log("curl response: ", 3, "/tmp/opencart-errors.log");
-                error_log($response, 3, "/tmp/opencart-errors.log");
                 if (strcmp($response, 'VERIFIED') == 0 || $this->request->post['payment_status'] == 'Completed') {
                     $this->model_checkout_order->confirm($order_id, $this->config->get('zx_standard_order_status_id'));
                 } else {
@@ -119,29 +115,25 @@ class ControllerPaymentZXStandard extends Controller {
 
                 curl_close($ch);
             } else {
-                error_log("No curl, using php to post:", 3, "/tmp/opencart-errors.log");
                 $header  = 'POST /cgi-bin/webscr HTTP/1.0' . "\r\n";
                 $header .= 'Content-Type: application/x-www-form-urlencoded' . "\r\n";
                 $header .= 'Content-Length: ' . strlen(utf8_decode($request)) . "\r\n";
                 $header .= 'Connection: close'  ."\r\n\r\n";
 
                 if (!$this->config->get('zx_standard_test')) {
-                    $fp = fsockopen('localhost', 4500, $errno, $errstr, 30);
+                    $fp = fsockopen('sandbox.zeevex.com', 80, $errno, $errstr, 30);
+
                 } else {
+                 
                     $fp = fsockopen('localhost', 4500, $errno, $errstr, 30);
                 }
 
-                error_log("writting:", 3, "/tmp/opencart-errors.log");
-
+              
                 if ($fp) {
                     fputs($fp, $header . $request);
-                    error_log($header . $request, 3, "/tmp/opencart-errors.log");
 
                     while (!feof($fp)) {
                         $response = fgets($fp, 1024);
-                        error_log("\n\nResponse:\n\n$response", 3, "/tmp/opencart-errors.log");
-                        error_log($response, 3, "/tmp/opencart-errors.log");
-
                         if (strcmp($response, 'VERIFIED') == 0) {
                             $this->model_checkout_order->confirm($order_id, $this->config->get('zx_standard_order_status_id'));
                         } else {
@@ -150,14 +142,10 @@ class ControllerPaymentZXStandard extends Controller {
                     }
 
                     fclose($fp);
-                    error_log("\n\nDone:", 3, "/tmp/opencart-errors.log");
 
                 }
             }
         }
-
-
-        error_log("Ending callback:", 3, "/tmp/opencart-errors.log");
 
     }
 }
